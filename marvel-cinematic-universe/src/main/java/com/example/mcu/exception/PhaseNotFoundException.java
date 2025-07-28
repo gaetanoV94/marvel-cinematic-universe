@@ -1,4 +1,4 @@
-package com.example.mcu.service.exception;
+package com.example.mcu.exception;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;

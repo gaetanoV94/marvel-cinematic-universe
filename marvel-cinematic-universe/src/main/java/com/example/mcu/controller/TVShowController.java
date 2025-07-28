@@ -20,74 +20,30 @@ import com.example.mcu.service.TVShowService;
 @RestController
 @RequestMapping("/api/tvshows")
 public class TVShowController {
-	
-	private final TVShowService tvShowService;
-	
-	@Autowired
-	public TVShowController(TVShowService tvShowService) {
-		this.tvShowService = tvShowService;
-	}
-	
-	@PostMapping("/create-new-tvshow")
-	public ResponseEntity<TVShow> saveTvShow(@RequestBody TVShowRecord tvShowRecord){
-		return Optional.ofNullable(tvShowService.saveTvShow(tvShowRecord))
-				.map(newTvShow -> ResponseEntity.status(HttpStatus.CREATED).body(newTvShow))
-				.orElseGet(() -> ResponseEntity.badRequest().build());
-	}
-	
-	@GetMapping("/get-all-tvshows")
-	public ResponseEntity<List<TVShow>> getAllTVShows(){
-		List<TVShow> tvShows = tvShowService.getAllTVShows();
-		return new ResponseEntity<List<TVShow>>(tvShows.stream().toList(), HttpStatus.OK);
-	}
-	
-	@GetMapping("/search/title")
-	public ResponseEntity<List<TVShow>> findByTitle(@RequestParam String title){
-		return Optional.ofNullable(tvShowService.findByTitle(title))
-    			.map(ResponseEntity::ok)
-    			.orElseGet(() -> ResponseEntity.badRequest().build());
-	}
-	
-	@GetMapping("/search/director")
-    public ResponseEntity<List<TVShow>> findByDirector(@RequestParam String director) {
-    	return Optional.ofNullable(tvShowService.findByDirector(director))
-		.map(ResponseEntity::ok)
-		.orElseGet(() -> ResponseEntity.badRequest().build());
-    }
-	
-	@GetMapping("/search/platform")
-    public ResponseEntity<List<TVShow>> findByPlatform(@RequestParam String director) {
-    	return Optional.ofNullable(tvShowService.findByPlatform(director))
-		.map(ResponseEntity::ok)
-		.orElseGet(() -> ResponseEntity.badRequest().build());
-    }
-	
-	@GetMapping("/search/budget")
-    public ResponseEntity<List<TVShow>> findByBudgetLessThan(@RequestParam double budget) {
-    	return Optional.ofNullable(tvShowService.findByBudgetLessThan(budget))
-		.map(ResponseEntity::ok)
-		.orElseGet(() -> ResponseEntity.badRequest().build());
-    }
-	
-	@GetMapping("/search/platform")
-    public ResponseEntity<List<TVShow>> findByNumberOfEpisodesGreaterThan(@RequestParam int numberOfEpisodes) {
-    	return Optional.ofNullable(tvShowService.findByNumberOfEpisodesGreaterThan(numberOfEpisodes))
-		.map(ResponseEntity::ok)
-		.orElseGet(() -> ResponseEntity.badRequest().build());
-    }
-	
-	@GetMapping("/search/metacritic")
-    public ResponseEntity<List<TVShow>> findByMetacriticMarkGreaterThan(@RequestParam double metacriticMark) {
-    	return Optional.ofNullable(tvShowService.findByMetacriticMarkGreaterThan(metacriticMark))
-		.map(ResponseEntity::ok)
-		.orElseGet(() -> ResponseEntity.badRequest().build());
-    }
-    
-    @GetMapping("/search/phasename")
-    public ResponseEntity<List<TVShow>> findByPhaseName(@RequestParam String phaseName) {
-    	return Optional.ofNullable(tvShowService.findByPhaseName(phaseName))
-		.map(ResponseEntity::ok)
-		.orElseGet(() -> ResponseEntity.badRequest().build());
+
+    private final TVShowService tvShowService;
+
+    public TVShowController(TVShowService tvShowService) {
+        this.tvShowService = tvShowService;
     }
 
+    @PostMapping
+    public ResponseEntity<TVShow> createTVShow(@RequestBody TVShowRecord record) {
+        TVShow saved = tvShowService.saveTVShow(record);
+        return ResponseEntity.status(201).body(saved);
+    }
+
+    @GetMapping("/filter")
+    public List<TVShow> filter(
+        @RequestParam(required = false) String title,
+        @RequestParam(required = false) String director,
+        @RequestParam(required = false) String platform,
+        @RequestParam(required = false) Long budgetMax,
+        @RequestParam(required = false) Integer minEpisodes,
+        @RequestParam(required = false) Double metacriticMin,
+        @RequestParam(required = false) String phase
+    ) {
+        return tvShowService.filterTVShows(title, director, platform, budgetMax, minEpisodes, metacriticMin, phase);
+    }
 }
+

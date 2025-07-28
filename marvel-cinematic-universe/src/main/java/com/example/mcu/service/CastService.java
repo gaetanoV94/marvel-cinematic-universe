@@ -1,15 +1,31 @@
 package com.example.mcu.service;
 
+import com.example.mcu.entity.Cast;
+import com.example.mcu.repository.CastRepository;
+import org.springframework.data.jpa.domain.Specification;
+import org.springframework.stereotype.Service;
+
 import java.util.List;
 
-import com.example.mcu.entity.Cast;
+import static com.example.mcu.specification.CastSpecifications.*;
 
-public interface CastService {
-    Cast saveCast(Cast cast);
-    List<Cast> getAllCast();
-    List<Cast> findByCharacter(String character);
-    List<Cast> findCastByActorFullName(String name, String surname);
-    List<Cast> findCastByActorNameOrSurname(String nameOrSurname);
-    List<Cast> findCastByTitle(String title);
-    List<Cast> findCastByTitleLike(String title);
+@Service
+public class CastService {
+
+    private final CastRepository castRepository;
+
+    public CastService(CastRepository castRepository) {
+        this.castRepository = castRepository;
+    }
+
+    public List<Cast> filterCast(String actorName, String actorSurname, String character, String title, String phase) {
+        Specification<Cast> spec = Specification
+                .where(hasActorName(actorName))
+                .and(hasActorSurname(actorSurname))
+                .and(hasCharacter(character))
+                .and(hasProductTitle(title))
+                .and(hasPhase(phase));
+
+        return castRepository.findAll(spec);
+    }
 }

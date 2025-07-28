@@ -17,26 +17,21 @@ import com.example.mcu.service.CastService;
 @RequestMapping("/api/cast")
 public class CastController {
 
-	@Autowired
     private final CastService castService;
 
-    @Autowired
     public CastController(CastService castService) {
         this.castService = castService;
     }
 
-    @PostMapping("/save-new-cast")
-    public Cast saveCast(@RequestBody Cast cast) {
-        return castService.saveCast(cast);
-    }
-
-    @GetMapping("/get-cast")
-    public List<Cast> getAllCast() {
-        return castService.getAllCast();
-    }
-
-    @GetMapping("/search/character")
-    public List<Cast> findByCharacter(@RequestParam String character) {
-        return castService.findByCharacter(character);
+    @GetMapping("/filter")
+    public List<Cast> filter(
+        @RequestParam(required = false) String actorName,
+        @RequestParam(required = false) String actorSurname,
+        @RequestParam(required = false) String character,
+        @RequestParam(required = false) String title,
+        @RequestParam(required = false) String phase
+    ) {
+        return castService.filterCast(actorName, actorSurname, character, title, phase);
     }
 }
+
